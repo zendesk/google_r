@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:gContact="http://schemas.google.com/contact/2008" xmlns:batch="http://schemas.google.com/gdata/batch" xmlns:gd="http://schemas.google.com/g/2005" gd:etag="&quot;Q3o6cDVSLit7I2A9WhVSGEkOQgI.&quot;">
+  <id>http://www.google.com/m8/feeds/contacts/michal%40futuresimple.com/base/2f30e7d8bf01953</id>
+  <updated>2012-03-15T20:49:22.418Z</updated>
+  <app:edited xmlns:app="http://www.w3.org/2007/app">2012-03-15T20:49:22.418Z</app:edited>
+  <category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/contact/2008#contact"/>
+  <title>Sir Mike Thomas Bugno XI</title>
+  <content>Notes about Mike</content>
+
+  <link rel="http://schemas.google.com/contacts/2008/rel#photo" type="image/*" href="https://www.google.com/m8/feeds/photos/media/michal%40futuresimple.com/2f30e7d8bf01953"/>
+  <link rel="self" type="application/atom+xml" href="https://www.google.com/m8/feeds/contacts/michal%40futuresimple.com/full/2f30e7d8bf01953"/>
+  <link rel="edit" type="application/atom+xml" href="https://www.google.com/m8/feeds/contacts/michal%40futuresimple.com/full/2f30e7d8bf01953"/>
+
+  <gd:name>
+    <gd:fullName>Sir Mike Thomas Bugno XI</gd:fullName>
+    <gd:namePrefix>Sir</gd:namePrefix>
+    <gd:givenName yomi="Maik">Mike</gd:givenName>
+    <gd:additionalName>Thomas</gd:additionalName>
+    <gd:familyName yomi="Boogno">Bugno</gd:familyName>
+    <gd:nameSuffix>XI</gd:nameSuffix>
+  </gd:name>
+
+  <gContact:nickname>Majki</gContact:nickname>
+
+  <gd:organization rel="http://schemas.google.com/g/2005#other">
+    <gd:orgName>FutureSimple</gd:orgName>
+    <gd:orgTitle>Coder</gd:orgTitle>
+  </gd:organization>
+
+  <gd:email rel="http://schemas.google.com/g/2005#home" address="home@example.com" primary="true"/>
+  <gd:email rel="http://schemas.google.com/g/2005#work" address="work@example.com"/>
+  <gd:email rel="http://schemas.google.com/g/2005#other" address="other@example.com"/>
+  <gd:email label="Non standard" address="nonstandard@example.com"/>
+
+  <gd:phoneNumber rel="http://schemas.google.com/g/2005#mobile">43-mobile</gd:phoneNumber>
+  <gd:phoneNumber rel="http://schemas.google.com/g/2005#work">023-office</gd:phoneNumber>
+  <gd:phoneNumber rel="http://schemas.google.com/g/2005#home">444-home</gd:phoneNumber>
+  <gd:phoneNumber rel="http://schemas.google.com/g/2005#main">888-main</gd:phoneNumber>
+
+  <gd:structuredPostalAddress rel="http://schemas.google.com/g/2005#home">
+    <gd:formattedAddress>ulica
+skrytka
+okolica, miasto, wojewodztwo kod
+kraj</gd:formattedAddress>
+    <gd:street>ulica</gd:street>
+    <gd:neighborhood>okolica</gd:neighborhood>
+    <gd:pobox>skrytka</gd:pobox>
+    <gd:postcode>kod</gd:postcode>
+    <gd:city>miasto</gd:city>
+    <gd:region>wojewodztwo</gd:region>
+    <gd:country>kraj</gd:country>
+  </gd:structuredPostalAddress>
+
+  <gd:structuredPostalAddress rel="http://schemas.google.com/g/2005#work">
+    <gd:formattedAddress>ulica2
+skrytka2
+okolica2, miasto2, wojedwodztwo2 kod2
+kraj2</gd:formattedAddress>
+    <gd:street>ulica2</gd:street>
+    <gd:neighborhood>okolica2</gd:neighborhood>
+    <gd:pobox>skrytka2</gd:pobox>
+    <gd:postcode>kod2</gd:postcode>
+    <gd:city>miasto2</gd:city>
+    <gd:region>wojewodztwo2</gd:region>
+    <gd:country>kraj2</gd:country>
+  </gd:structuredPostalAddress>
+
+  <gContact:userDefinedField key="own key" value="Own value"/>
+
+  <gContact:website href="glowna.com" rel="home-page"/>
+  <gContact:website href="sluzbowy.com" rel="work"/>
+
+  <gContact:groupMembershipInfo deleted="false" href="http://www.google.com/m8/feeds/groups/michal%40futuresimple.com/base/6"/>
+  <gContact:groupMembershipInfo deleted="false" href="http://www.google.com/m8/feeds/groups/michal%40futuresimple.com/base/5747930b8e7844f6"/>
+</entry>
