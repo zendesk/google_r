@@ -116,7 +116,6 @@ class GoogleR
           entries = object_class.from_json(Yajl::Parser.parse(response.body))
         when /xml/
           entries = object_class.from_xml(response.body)
-          p entries
         end
         current_count = entries.size
         next if current_count == 0

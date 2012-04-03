@@ -146,8 +146,7 @@ class GoogleR::Contact
   def self.from_xml(xml)
     doc = Nokogiri::XML.parse(xml)
 
-
-    doc.search("entry")
+    is_collection = doc.search("totalResults").nil?
 
     doc.remove_namespaces!
     doc = doc.root
