@@ -68,6 +68,17 @@ class GoogleR
   end
 
   def events(calendar, params = {})
+    fetch_events(calendar, params)
+  end
+
+  def fetch_events(calendar, params)
+    event = GoogleR::Event.new(calendar)
+    response = make_request(:get, event)
+    if response.status == 200
+      parse_response(response, event)
+    else
+      raise GoogleR::Error.new(response.status, response.body)
+    end
   end
 
   def fetch_objects(object_class, params = {})
