@@ -23,5 +23,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "simplecov"
   s.add_development_dependency "fuubar"
   s.add_runtime_dependency "nokogiri"
+  s.add_runtime_dependency "yajl-ruby"
   s.add_runtime_dependency "faraday"
 end
