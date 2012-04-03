@@ -7,6 +7,8 @@ require "logger"
 
 require "google_r/exceptions"
 require "google_r/contact"
+require "google_r/calendar"
+require "google_r/event"
 require "google_r/group"
 require "google_r/token"
 
@@ -21,19 +23,9 @@ class GoogleR
   end
 
   def fetch(object)
-    remote_id = object.google_id.split("/").last
-    path = "/m8/feeds/#{object.class.path_part}/default/full/#{remote_id}"
-    response = connection.get(path) do |req|
-      req.headers['Content-Type'] = 'application/atom+xml'
-      req.headers['Authorization'] = "OAuth #{oauth2_token}"
-      req.headers['GData-Version'] = '3.0'
-    end
-    logger.debug("#fetch")
-    logger.debug(path)
-    logger.debug(response.status)
-    logger.debug(response.body)
+    response = make_request(:get, object)
     if response.status == 200
-      object.class.from_xml(response.body)
+      parse_response(response, object)
     else
       raise GoogleR::Error.new(response.status, response.body)
     end
@@ -48,54 +40,60 @@ class GoogleR
   end
 
   def create(object)
-    xml = object.to_xml
-    response = connection.post("/m8/feeds/#{object.class.path_part}/default/full") do |req|
-      req.headers['Content-Type'] = 'application/atom+xml'
-      req.headers['Authorization'] = "OAuth #{oauth2_token}"
-      req.headers['GData-Version'] = '3.0'
-      req.body = xml
-    end
-    logger.debug("#create")
-    logger.debug(response.status)
-    logger.debug(response.body)
-    if response.status == 201
-      object.class.from_xml(response.body)
+    response = make_request(:post, object)
+    if response.status == 200 || response.status == 201
+      parse_response(response, object)
     else
       raise GoogleR::Error.new(response.status, response.body)
     end
   end
 
   def update(object)
-    xml = object.to_xml
-    remote_id = object.google_id.split("/").last
-    url = "/m8/feeds/#{object.class.path_part}/default/full/#{remote_id}"
-    response = connection.put(url) do |req|
-      req.headers['Content-Type'] = 'application/atom+xml'
-      req.headers['Authorization'] = "OAuth #{oauth2_token}"
-      req.headers['GData-Version'] = '3.0'
-      req.headers['If-Match'] = object.etag
-      req.body = xml
-    end
-    logger.debug("#update #{url}")
-    logger.debug(response.status)
-    logger.debug(response.body)
+    response = make_request(:patch, object)
     if response.status == 200
-      object.class.from_xml(response.body)
+      parse_response(response, object)
     else
       raise GoogleR::Error.new(response.status, response.body)
     end
   end
 
   def contacts(params = {})
-    klass = GoogleR::Contact
-    objects = fetch_objects(klass, params)
-    objects.map { |e| klass.from_xml(e) }
+    fetch_objects(GoogleR::Contact, params)
   end
 
   def groups(params = {})
-    klass = GoogleR::Group
-    objects = fetch_objects(klass, params)
-    objects.map { |e| klass.from_xml(e) }
+    fetch_objects(GoogleR::Group, params)
+  end
+
+  def calendars(params = {})
+    fetch_objects(GoogleR::Calendar, params)
+  end
+
+  def events(calendar, params = {})
+    fetch_events(calendar, params)
+  end
+
+  def fetch_events(calendar, params)
+    event = GoogleR::Event.new(calendar)
+    max_results = 1
+
+    params.merge!({"maxResults" => max_results})
+
+    events = []
+    next_page_token = nil
+
+    begin
+      response = make_request(:get, event, params)
+      #next_page_token = nil
+      if response.status == 200
+        events.concat(parse_response(response, event))
+        next_page_token = Yajl::Parser.parse(response.body)["nextPageToken"]
+        params.merge!({"pageToken" => next_page_token})
+      else
+        raise GoogleR::Error.new(response.status, response.body)
+      end
+    end while !next_page_token.nil?
+    events
   end
 
   def fetch_objects(object_class, params = {})
@@ -103,25 +101,28 @@ class GoogleR
     per_page = 500
     results = []
     start_index = 1
+    connection = connection(object_class)
     begin
       query_params = {
         :"max-results" => per_page,
         :"start-index" => start_index,
       }.merge(params)
 
-      path = "/m8/feeds/#{object_class.path_part}/default/full/?#{Faraday::Utils.build_query(query_params)}"
-      response = connection.get(path) do |req|
+      response = connection.get(object_class.path + "?" + Faraday::Utils.build_query(query_params)) do |req|
         req.headers['Content-Type'] = 'application/atom+xml'
         req.headers['Authorization'] = "OAuth #{oauth2_token}"
         req.headers['GData-Version'] = '3.0'
       end
       if response.status == 200
-        doc = Nokogiri::XML.parse(response.body)
-        total_results = doc.search("//openSearch:totalResults").first.inner_html.to_i
-        entries = doc.search("entry")
+        case response.headers["Content-Type"]
+        when /json/
+          entries = object_class.from_json(Yajl::Parser.parse(response.body))
+        when /xml/
+          entries = object_class.from_xml(Nokogiri::XML.parse(response.body))
+        end
         current_count = entries.size
         next if current_count == 0
-        results += entries.map { |e| e.to_s }
+        results += entries
         start_index += current_count
       else
         raise GoogleR::Error.new(response.status, response.body)
@@ -130,8 +131,39 @@ class GoogleR
     results
   end
 
-  def connection
-    @connection ||= Faraday.new(:url => "https://www.google.com", :ssl => {:verify => false})
+  def connection(klass)
+    Faraday.new(:url => klass.url, :ssl => {:verify => false})
+  end
+
+  def make_request(http_method, object, params = {})
+    body = case object.class.api_content_type
+           when :json
+             object.to_json
+           when :xml
+             object.to_xml
+           else
+             raise "Cannot serialize object"
+           end
+    path = object.path + "?" + Faraday::Utils.build_query(params)
+    response = connection(object.class).send(http_method, path) do |req|
+      req.headers['Authorization'] = "OAuth #{oauth2_token}"
+      object.class.api_headers.each do |header, value|
+        req.headers[header] = value
+      end
+      req.body = body
+      puts "making #{http_method} request to #{path}"
+    end
+  end
+
+  def parse_response(response, object)
+    case object.class.api_content_type
+    when :json
+      object.class.from_json(Yajl::Parser.parse(response.body), object)
+    when :xml
+      object.class.from_xml(Nokogiri::XML.parse(response.body), object)
+    else
+      raise "Cannot deserialize"
+    end
   end
 
   def token
