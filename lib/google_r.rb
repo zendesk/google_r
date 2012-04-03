@@ -82,7 +82,6 @@ class GoogleR
 
     begin
       response = make_request(:get, event, params)
-      #next_page_token = nil
       if response.status == 200
         events.concat(parse_response(response, event))
         next_page_token = Yajl::Parser.parse(response.body)["nextPageToken"]
@@ -116,7 +115,8 @@ class GoogleR
         when /json/
           entries = object_class.from_json(Yajl::Parser.parse(response.body))
         when /xml/
-          entries = object_class.from_xml(Nokogiri::XML.parse(response.body))
+          entries = object_class.from_xml(response.body)
+          p entries
         end
         current_count = entries.size
         next if current_count == 0

@@ -21,6 +21,19 @@ class GoogleR::Contact
     @user_fields = {}
   end
 
+  def self.url
+    "https://www.google.com"
+  end
+
+  def self.path
+      "/m8/feeds/contacts/default/full/"
+    #if new?
+      #"/m8/feeds/contacts/default/full/"
+    #else
+      #"/m8/feeds/contacts/default/full/#{google_id}"
+    #end
+  end
+
   def self.path_part
     "contacts"
   end
@@ -132,11 +145,16 @@ class GoogleR::Contact
 
   def self.from_xml(xml)
     doc = Nokogiri::XML.parse(xml)
+
+
+    doc.search("entry")
+
     doc.remove_namespaces!
     doc = doc.root
     contact = GoogleR::Contact.new
 
     google_id = doc.search("id")
+
     if google_id.empty?
       contact.etag = contact.google_id = nil
     else

@@ -13,21 +13,27 @@ describe GoogleR do
     data = @api.contacts
     data.size.should == 2
 
-    contact_1 = data.find { |e| e.full_name == "Awangarda druga" }
+    contact_1 = data.find { |e| e.given_name == "Awangarda druga" }
     contact_1.should_not be_nil
 
-    contact_2 = data.find { |e| e.full_name == "Sir Bartek Maciej Niemtur III" }
+    contact_2 = data.find { |e| e.given_name == "Sir Bartek Maciej Niemtur III" }
     contact_2.should_not be_nil
   end
 
+  it "should process groups"
+
+  it "should process events"
+
   it "should handle accounts which have 0 contacts" do
     no_contacts = File.read('spec/fixtures/no_contacts.xml')
-    @api.connection.should_receive(:get).and_return(mock(:body => no_contacts, :status => 200))
+    GoogleR.any_instance.stub_chain(:connection, :get).and_return(mock(:body => no_contacts, :status => 200, :headers => {"Content-Type" => "xml"}))
+
+    @api.connection(GoogleR::Contact).should_receive(:get)
     @api.contacts.should be_empty
   end
 
   it "should raise error if request fails" do
-    @api.connection.should_receive(:get).and_return(mock(:body => "Failed :(", :status => 400))
+    @api.connection(GoogleR::Contact).should_receive(:get).and_return(mock(:body => "Failed :(", :status => 400))
     ex = nil
     begin
       @api.contacts
