@@ -1,12 +1,14 @@
 require "google_r/version"
 
 require "nokogiri"
+require "yajl"
 require "faraday"
 require "logger"
 
 require "google_r/exceptions"
 require "google_r/contact"
 require "google_r/group"
+require "google_r/token"
 
 class GoogleR
   attr_reader :oauth2_token
@@ -130,5 +132,16 @@ class GoogleR
 
   def connection
     @connection ||= Faraday.new(:url => "https://www.google.com", :ssl => {:verify => false})
+  end
+
+  def token
+    begin
+      response = make_request(:post, GoogleR::Token.new(oauth2_token))
+      if response.status == 200
+        GoogleR::Token.from_json(Yajl::Parser.parse(response.body), oauth2_token)
+      else
+        nil
+      end
+    end
   end
 end
