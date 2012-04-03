@@ -35,21 +35,16 @@ class GoogleR::Event
   def self.from_json(json, *attrs)
     calendar = attrs[0].calendar
 
-    if json["kind"] == "calendar#events" 
-      events = json["items"] || []
-
-      if events
-        events.each do |event|
-          event = self.new(calendar)
-          event.google_id = json["id"]
-          event.etag = json["etag"]
-          event.description = json["description"]
-          event.summary = json["summary"]
-          event.visibility = json["visibility"]
-        end
-      end
-
-      events
+    if json["kind"] == "calendar#events"
+      (json["items"] || []).map { |e| from_json(e) }
+    elsif json["kind"] == "calendar#event"
+      event = self.new(calendar)
+      event.google_id = json["id"]
+      event.etag = json["etag"]
+      event.description = json["description"]
+      event.summary = json["summary"]
+      event.visibility = json["visibility"]
+      event
     else
       raise "Not implemented:\n#{json.inspect}"
     end
