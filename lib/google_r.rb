@@ -117,7 +117,9 @@ class GoogleR
         when /json/
           entries = object_class.from_json(Yajl::Parser.parse(response.body))
         when /xml/
-          entries = object_class.from_xml(response.body)
+          doc = Nokogiri::XML.parse(response.body)
+          doc.remove_namespaces!
+          entries = object_class.from_xml(doc)
         end
         current_count = entries.size
         next if current_count == 0

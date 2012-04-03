@@ -143,13 +143,10 @@ class GoogleR::Contact
     @websites << website
   end
 
-  def self.from_xml(xml)
-    doc = Nokogiri::XML.parse(xml)
+  def self.from_xml(doc)
+    is_collection = doc.search("totalResults").size > 0
+    return doc.search("entry").map { |e| from_xml(e) } if is_collection
 
-    is_collection = doc.search("totalResults").nil?
-
-    doc.remove_namespaces!
-    doc = doc.root
     contact = GoogleR::Contact.new
 
     google_id = doc.search("id")

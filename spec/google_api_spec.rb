@@ -7,16 +7,15 @@ describe GoogleR do
 
   it "should process contacts" do
     google_contacts = File.read('spec/fixtures/contact_list.xml');
-    contacts = Nokogiri::XML.parse(google_contacts).search("entry").map { |e| e.to_s }
-    @api.should_receive(:fetch_objects).and_return(contacts)
+    @api.stub_chain(:connection, :get).and_return(mock(:body => google_contacts, :status => 200, :headers => {"Content-Type" => "xml"}))
 
     data = @api.contacts
     data.size.should == 2
 
-    contact_1 = data.find { |e| e.given_name == "Awangarda druga" }
+    contact_1 = data.find { |e| e.full_name == "Awangarda druga" }
     contact_1.should_not be_nil
 
-    contact_2 = data.find { |e| e.given_name == "Sir Bartek Maciej Niemtur III" }
+    contact_2 = data.find { |e| e.full_name == "Sir Bartek Maciej Niemtur III" }
     contact_2.should_not be_nil
   end
 
@@ -33,7 +32,7 @@ describe GoogleR do
   end
 
   it "should raise error if request fails" do
-    @api.connection(GoogleR::Contact).should_receive(:get).and_return(mock(:body => "Failed :(", :status => 400))
+    GoogleR.any_instance.stub_chain(:connection, :get).and_return(mock(:body => "Failed :(", :status => 400))
     ex = nil
     begin
       @api.contacts
