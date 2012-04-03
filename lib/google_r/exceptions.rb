@@ -1,5 +1,7 @@
 class GoogleR
   class Error < Exception
+    attr_reader :status, :response
+
     def initialize(status, response)
       @status, @response = status, response
     end
