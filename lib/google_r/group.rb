@@ -5,7 +5,8 @@ class GoogleR::Group
 
   attr_accessor :property, :etag, :google_id, :title, :updated
 
-  def initialize
+  def self.url
+    "https://www.google.com"
   end
 
   def self.path_part
