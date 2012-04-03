@@ -73,12 +73,25 @@ class GoogleR
 
   def fetch_events(calendar, params)
     event = GoogleR::Event.new(calendar)
-    response = make_request(:get, event)
-    if response.status == 200
-      parse_response(response, event)
-    else
-      raise GoogleR::Error.new(response.status, response.body)
-    end
+    max_results = 1
+
+    params.merge!({"maxResults" => max_results})
+
+    events = []
+    next_page_token = nil
+
+    begin
+      response = make_request(:get, event, params)
+      #next_page_token = nil
+      if response.status == 200
+        events.concat(parse_response(response, event))
+        next_page_token = Yajl::Parser.parse(response.body)["nextPageToken"]
+        params.merge!({"pageToken" => next_page_token})
+      else
+        raise GoogleR::Error.new(response.status, response.body)
+      end
+    end while !next_page_token.nil?
+    events
   end
 
   def fetch_objects(object_class, params = {})
@@ -120,7 +133,7 @@ class GoogleR
     Faraday.new(:url => klass.url, :ssl => {:verify => false})
   end
 
-  def make_request(http_method, object)
+  def make_request(http_method, object, params = {})
     body = case object.class.api_content_type
            when :json
              object.to_json
@@ -129,12 +142,14 @@ class GoogleR
            else
              raise "Cannot serialize object"
            end
-    response = connection(object.class).send(http_method, object.path) do |req|
+    path = object.path + "?" + Faraday::Utils.build_query(params)
+    response = connection(object.class).send(http_method, path) do |req|
       req.headers['Authorization'] = "OAuth #{oauth2_token}"
       object.class.api_headers.each do |header, value|
         req.headers[header] = value
       end
       req.body = body
+      puts "making #{http_method} request to #{path}"
     end
   end
 
