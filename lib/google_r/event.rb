@@ -36,7 +36,7 @@ class GoogleR::Event
     calendar = attrs[0].calendar
 
     if json["kind"] == "calendar#events"
-      (json["items"] || []).map { |e| from_json(e) }
+      (json["items"] || []).map { |e| from_json(e, *attrs) }
     elsif json["kind"] == "calendar#event"
       event = self.new(calendar)
       event.google_id = json["id"]
