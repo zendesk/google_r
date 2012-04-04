@@ -66,30 +66,39 @@ class GoogleR
   end
 
   def events(calendar, params = {})
-    fetch_events(calendar, params)
+    calendar_google_id = calendar.google_id.split("/").last
+    jsons = fetch_json(GoogleR::Event, GoogleR::Event.url, GoogleR::Event.path(calendar_google_id), params)
+    event = GoogleR::Event.new(calendar)
+    jsons.map { |e| GoogleR::Event.from_json(e, event) }.flatten
   end
 
-  def fetch_events(calendar, params)
+  def calendars(params = {})
+    jsons = fetch_json(GoogleR::Calendar, GoogleR::Calendar.url, GoogleR::Calendar.path, params)
+    jsons.map { |e| GoogleR::Calendar.from_json(e) }.flatten
+  end
+
+  # def fetch_events(calendar, params)
+  def fetch_json(klass, url, path, params)
     max_results = 500
 
     params.merge!({"maxResults" => max_results})
 
-    events = []
+    elements = []
     next_page_token = nil
 
     begin
-      event = GoogleR::Event.new(calendar)
-      response = make_request(:get, GoogleR::Event.url, GoogleR::Event.path(calendar.google_id), params, nil, GoogleR::Event.api_headers)
-      # def make_request(http_method, url, path, params, body, headers)
+      response = make_request(:get, url, path, params, nil, klass.api_headers)
       if response.status == 200
-        events.concat(parse_response(response, event))
-        next_page_token = Yajl::Parser.parse(response.body)["nextPageToken"]
+        parsed = Yajl::Parser.parse(response.body)
+        elements.concat(parsed["items"])
+
+        next_page_token = parsed["nextPageToken"]
         params.merge!({"pageToken" => next_page_token})
       else
         raise GoogleR::Error.new(response.status, response.body)
       end
     end while !next_page_token.nil?
-    events
+    elements
   end
 
   def fetch_legacy_xml(klass, url, path, params = {})

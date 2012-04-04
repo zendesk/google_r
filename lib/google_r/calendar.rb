@@ -14,6 +14,10 @@ class GoogleR::Calendar
     }
   end
 
+  def self.path
+    "/calendar/v3/users/me/calendarList"
+  end
+
   def path
     if new?
       "/calendar/v3/calendars"
@@ -23,7 +27,7 @@ class GoogleR::Calendar
   end
 
   def self.from_json(json, *attrs)
-    if json["kind"] == "calendar#calendar"
+    if json["kind"] == "calendar#calendar" || json["kind"] == "calendar#calendarListEntry"
       calendar = self.new
       calendar.google_id = json["id"]
       calendar.etag = json["etag"]
