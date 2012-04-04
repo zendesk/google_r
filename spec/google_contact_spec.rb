@@ -137,7 +137,7 @@ describe GoogleR::Contact do
   end
 
   it "should generate valid xml" do
-    xml = @contact.to_xml
+    xml = @contact.to_google
     c = Nokogiri::XML.parse(xml)
     c = c.root
 

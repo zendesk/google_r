@@ -3,7 +3,9 @@ require 'spec_helper'
 describe GoogleR::Contact do
   before(:each) do
     @single_group_path = "spec/fixtures/single_group.xml"
-    @group = GoogleR::Group.from_xml(File.read(@single_group_path))
+    @parsed_xml = Nokogiri::XML.parse(File.read(@single_group_path))
+    @parsed_xml.remove_namespaces!
+    @group = GoogleR::Group.from_xml(@parsed_xml.root)
   end
 
   it "should load id and etag from xml" do
@@ -25,9 +27,8 @@ describe GoogleR::Contact do
   end
 
   it "should generate valid xml" do
-    xml = @group.to_xml
-    g = GoogleR::Group.from_xml(xml)
-    g = Nokogiri::XML.parse(xml).first_element_child
+    xml = @group.to_google
+    g = Nokogiri::XML.parse(xml).root
 
     g.name.should == "entry"
     g.namespace.prefix.should == "atom"

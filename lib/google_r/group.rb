@@ -9,11 +9,26 @@ class GoogleR::Group
     "https://www.google.com"
   end
 
-  def self.path_part
-    "groups"
+  def self.path
+    "/m8/feeds/groups/default/full/"
   end
 
-  def to_xml
+  def self.api_headers
+    {
+      'GData-Version' => '3.0',
+      'Content-Type' => 'application/xml',
+    }
+  end
+
+  def path
+    if new?
+      self.class.path
+    else
+      self.class.path + google_id.split("/")[-1]
+    end
+  end
+
+  def to_google
     builder = Nokogiri::XML::Builder.new(:encoding => "UTF-8") do |xml|
       root_attrs = {
         'xmlns:atom' => 'http://www.w3.org/2005/Atom',
@@ -36,10 +51,10 @@ class GoogleR::Group
     builder.to_xml
   end
 
-  def self.from_xml(xml)
-    doc = Nokogiri::XML.parse(xml)
-    doc.remove_namespaces!
-    doc = doc.root
+  def self.from_xml(doc, *attrs)
+    is_collection = doc.search("totalResults").size > 0
+    return doc.search("entry").map { |e| from_xml(e) } if is_collection
+
     group = self.new
 
     google_id = doc.search("id")

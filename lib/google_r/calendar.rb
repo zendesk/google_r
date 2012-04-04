@@ -7,10 +7,6 @@ class GoogleR::Calendar
     "https://www.googleapis.com"
   end
 
-  def self.api_content_type
-    :json
-  end
-
   def self.api_headers
     {
       'GData-Version' => '3.0',
@@ -40,7 +36,7 @@ class GoogleR::Calendar
     end
   end
 
-  def to_json(yajl_opts = {})
+  def to_google(yajl_opts = {})
     hash = {
       "kind" => "calendar#calendar",
     }

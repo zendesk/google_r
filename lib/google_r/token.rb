@@ -12,16 +12,12 @@ class GoogleR::Token
     "https://www.googleapis.com"
   end
 
-  def self.api_content_type
-    :json
-  end
-
   def self.api_headers
     {}
   end
 
   def path
-    "/oauth2/v2/tokeninfo?access_token=#{self.token}"
+    "/oauth2/v2/tokeninfo"
   end
 
   def self.from_json(json, *attrs)
@@ -38,7 +34,7 @@ class GoogleR::Token
     expires_at.to_i - Time.now.to_i
   end
 
-  def to_json(yajl_opts = {})
+  def to_google(yajl_opts = {})
     Yajl::Encoder.encode({}, yajl_opts)
   end
 

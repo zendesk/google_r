@@ -26,23 +26,29 @@ class GoogleR::Contact
   end
 
   def self.path
-      "/m8/feeds/contacts/default/full/"
-    #if new?
-      #"/m8/feeds/contacts/default/full/"
-    #else
-      #"/m8/feeds/contacts/default/full/#{google_id}"
-    #end
+    "/m8/feeds/contacts/default/full/"
   end
 
-  def self.path_part
-    "contacts"
+  def self.api_headers
+    {
+      'GData-Version' => '3.0',
+      'Content-Type' => 'application/xml',
+    }
+  end
+
+  def path
+    if new?
+      self.class.path
+    else
+      self.class.path + google_id.split("/")[-1]
+    end
   end
 
   def full_name
     [name_prefix, given_name, additional_name, family_name, name_suffix].compact.join(" ")
   end
 
-  def to_xml
+  def to_google
     builder = Nokogiri::XML::Builder.new(:encoding => "UTF-8") do |xml|
       root_attrs = {
         'xmlns:atom' => 'http://www.w3.org/2005/Atom',
@@ -143,7 +149,7 @@ class GoogleR::Contact
     @websites << website
   end
 
-  def self.from_xml(doc)
+  def self.from_xml(doc, *attrs)
     is_collection = doc.search("totalResults").size > 0
     return doc.search("entry").map { |e| from_xml(e) } if is_collection
 
