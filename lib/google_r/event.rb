@@ -28,6 +28,10 @@ class GoogleR::Event
     end
   end
 
+  def self.path(calendar_google_id)
+    "/calendar/v3/calendars/#{calendar_google_id}/events"
+  end
+
   def self.from_json(json, *attrs)
     calendar = attrs[0].calendar
 

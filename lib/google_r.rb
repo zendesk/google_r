@@ -70,7 +70,6 @@ class GoogleR
   end
 
   def fetch_events(calendar, params)
-    event = GoogleR::Event.new(calendar)
     max_results = 500
 
     params.merge!({"maxResults" => max_results})
@@ -79,7 +78,9 @@ class GoogleR
     next_page_token = nil
 
     begin
-      response = make_request(:get, event, params)
+      event = GoogleR::Event.new(calendar)
+      response = make_request(:get, GoogleR::Event.url, GoogleR::Event.path(calendar.google_id), params, nil, GoogleR::Event.api_headers)
+      # def make_request(http_method, url, path, params, body, headers)
       if response.status == 200
         events.concat(parse_response(response, event))
         next_page_token = Yajl::Parser.parse(response.body)["nextPageToken"]
