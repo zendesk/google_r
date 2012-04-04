@@ -77,7 +77,6 @@ class GoogleR
     jsons.map { |e| GoogleR::Calendar.from_json(e) }.flatten
   end
 
-  # def fetch_events(calendar, params)
   def fetch_json(klass, url, path, params)
     max_results = 500
 
@@ -90,7 +89,7 @@ class GoogleR
       response = make_request(:get, url, path, params, nil, klass.api_headers)
       if response.status == 200
         parsed = Yajl::Parser.parse(response.body)
-        elements.concat(parsed["items"])
+        elements.concat(parsed["items"] || [])
 
         next_page_token = parsed["nextPageToken"]
         params.merge!({"pageToken" => next_page_token})
