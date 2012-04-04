@@ -75,7 +75,7 @@ class GoogleR
 
   def fetch_events(calendar, params)
     event = GoogleR::Event.new(calendar)
-    max_results = 1
+    max_results = 500
 
     params.merge!({"maxResults" => max_results})
 
