@@ -31,11 +31,11 @@ class GoogleR
     end
   end
 
-  def save(object)
+  def save(object, params = {})
     if object.new?
-      create(object)
+      create(object, params)
     else
-      update(object)
+      update(object, params)
     end
   end
 
@@ -48,7 +48,7 @@ class GoogleR
     end
   end
 
-  def update(object)
+  def update(object, params = {})
     response = make_request(:patch, object.class.url, object.path, params, object.to_google, object.class.api_headers)
     if response.status == 200
       parse_response(response, object)
