@@ -1,15 +1,17 @@
 require 'spec_helper'
 
 describe GoogleR do
-  before(:each) do
-    @api = GoogleR.new("token")
-  end
+
+  let(:api) { GoogleR.new("token") }
 
   it "should process contacts" do
     google_contacts = File.read('spec/fixtures/contact_list.xml');
-    @api.stub_chain(:connection, :get).and_return(mock(:body => google_contacts, :status => 200, :headers => {"Content-Type" => "xml"}))
+    connection_get_answer = mock(:body => google_contacts,
+                                 :status => 200,
+                                 :headers => {"Content-Type" => "xml"})
+    api.stub_chain(:connection, :get).and_return(connection_get_answer)
 
-    data = @api.contacts
+    data = api.contacts
     data.size.should == 2
 
     contact_1 = data.find { |e| e.full_name == "Awangarda druga" }
@@ -25,17 +27,22 @@ describe GoogleR do
 
   it "should handle accounts which have 0 contacts" do
     no_contacts = File.read('spec/fixtures/no_contacts.xml')
-    GoogleR.any_instance.stub_chain(:connection, :get).and_return(mock(:body => no_contacts, :status => 200, :headers => {"Content-Type" => "xml"}))
+    connection_get_answer = mock(:body => no_contacts,
+                                 :status => 200,
+                                 :headers => {"Content-Type" => "xml"})
+    GoogleR.any_instance.stub_chain(:connection, :get).and_return(connection_get_answer)
 
-    @api.connection(GoogleR::Contact).should_receive(:get)
-    @api.contacts.should be_empty
+    api.connection(GoogleR::Contact).should_receive(:get)
+    api.contacts.should be_empty
   end
 
   it "should raise error if request fails" do
-    GoogleR.any_instance.stub_chain(:connection, :get).and_return(mock(:body => "Failed :(", :status => 400))
+    connection_get_answer = mock(:body => "Failed :(",
+                                 :status => 400)
+    GoogleR.any_instance.stub_chain(:connection, :get).and_return(connection_get_answer)
     ex = nil
     begin
-      @api.contacts
+      api.contacts
     rescue GoogleR::Error => e
       ex = e
     end

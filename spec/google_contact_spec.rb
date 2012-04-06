@@ -1,143 +1,184 @@
 require 'spec_helper'
 
 describe GoogleR::Contact do
-  before(:each) do
-    @single_contact_path = "spec/fixtures/single_contact.xml"
-    doc = Nokogiri::XML.parse(File.read(@single_contact_path))
+  before do
+    single_contact_path = "spec/fixtures/single_contact.xml"
+    doc = Nokogiri::XML.parse(File.read(single_contact_path))
     doc.remove_namespaces!
-    @contact = GoogleR::Contact.from_xml(doc.root)
+    @doc_root = doc.root
   end
 
-  it "should load id and etag from xml" do
-    @contact.google_id.should == "http://www.google.com/m8/feeds/contacts/michal%40futuresimple.com/base/2f30e7d8bf01953"
-    @contact.etag.should == "\"Q3o6cDVSLit7I2A9WhVSGEkOQgI.\""
+  let(:contact) { GoogleR::Contact.from_xml(@doc_root) }
+  subject { contact }
+
+  context "should load id and etag from xml" do
+    its(:google_id) { should == "http://www.google.com/m8/feeds/contacts/michal%40futuresimple.com/base/2f30e7d8bf01953" }
+    its(:etag) { should == "\"Q3o6cDVSLit7I2A9WhVSGEkOQgI.\"" }
   end
 
-  it "should load emails from xml" do
-    @contact.emails.size.should == 4
-    emails = @contact.emails
+  context "should load emails from xml" do
+    let (:emails) { GoogleR::Contact.from_xml(@doc_root).emails }
+    subject { emails }
+    its(:size) { should == 4 }
 
-    home_email = emails.find { |e| e.rel == "http://schemas.google.com/g/2005#home" }
-    home_email.address.should == "home@example.com"
-    home_email.label.should be_nil
-    home_email.primary.should be_true
+    context "home_email" do
+      subject { emails.find { |e| e.rel == "http://schemas.google.com/g/2005#home" } } 
+      its(:address) { should == "home@example.com" }
+      its(:label)   { should be_nil }
+      its(:primary) { should be_true }
+    end
 
-    work_email = emails.find { |e| e.rel == "http://schemas.google.com/g/2005#work" }
-    work_email.address.should == "work@example.com"
-    work_email.label.should be_nil
-    work_email.primary.should be_false
+    context "work_email" do
+      subject { emails.find { |e| e.rel == "http://schemas.google.com/g/2005#work" } } 
+      its(:address) { should == "work@example.com" }
+      its(:label)   { should be_nil }
+      its(:primary) { should be_false }
+    end
 
-    other_email = emails.find { |e| e.rel == "http://schemas.google.com/g/2005#other" }
-    other_email.address.should == "other@example.com"
-    other_email.label.should be_nil
-    other_email.primary.should be_false
+    context "other_email" do
+      subject { emails.find { |e| e.rel == "http://schemas.google.com/g/2005#other" } } 
+      its(:address) { should == "other@example.com" }
+      its(:label)   { should be_nil }
+      its(:primary) { should be_false }
+    end
 
-    custom_email = emails.find { |e| e.rel.nil? }
-    custom_email.address.should == "nonstandard@example.com"
-    custom_email.label.should == "Non standard"
-    custom_email.primary.should be_false
+    context "custom_email" do
+      subject { emails.find { |e| e.rel.nil? } }
+      its(:address) { should == "nonstandard@example.com" }
+      its(:label)   { should == "Non standard" }
+      its(:primary) { should be_false }
+    end
+
   end
 
-  it "should load phones from xml" do
-    @contact.phones.size.should == 4
-    phones = @contact.phones
+  context "should load phones from xml" do
+    let (:phones) { GoogleR::Contact.from_xml(@doc_root).phones }
+    subject { phones }
+    its(:size) { should == 4 }
 
-    home_phone = phones.find { |e| e.rel == "http://schemas.google.com/g/2005#home" }
-    home_phone.text.should == "444-home"
+    context "home_phone" do
+      subject { phones.find { |e| e.rel == "http://schemas.google.com/g/2005#home" } }
+      its(:text) { should == "444-home" }
+    end
 
-    work_phone = phones.find { |e| e.rel == "http://schemas.google.com/g/2005#work" }
-    work_phone.text.should == "023-office"
+    context "work_phone" do
+      subject { phones.find { |e| e.rel == "http://schemas.google.com/g/2005#work" } }
+      its(:text) { should == "023-office" }
+    end
 
-    mobile_phone = phones.find { |e| e.rel == "http://schemas.google.com/g/2005#mobile" }
-    mobile_phone.text.should == "43-mobile"
+    context "mobile_phone" do
+      subject { phones.find { |e| e.rel == "http://schemas.google.com/g/2005#mobile" } }
+      its(:text) { should == "43-mobile" }
+    end
 
-    main_phone = phones.find { |e| e.rel == "http://schemas.google.com/g/2005#main" }
-    main_phone.text.should == "888-main"
+    context "main_phone" do
+      subject { phones.find { |e| e.rel == "http://schemas.google.com/g/2005#main" } }
+      its(:text) { should == "888-main" }
+    end
   end
 
-  it "should load name from xml" do
-    @contact.name_prefix.should == "Sir"
-    @contact.given_name.should == "Mike"
-    @contact.additional_name.should == "Thomas"
-    @contact.family_name.should == "Bugno"
-    @contact.name_suffix.should == "XI"
-    @contact.full_name.should == "Sir Mike Thomas Bugno XI"
+  context "should load name from xml" do
+    its(:name_prefix)     { should == "Sir" }
+    its(:given_name)      { should == "Mike" }
+    its(:additional_name) { should == "Thomas" }
+    its(:family_name)     { should == "Bugno" }
+    its(:name_suffix)     { should == "XI" }
+    its(:full_name)       { should == "Sir Mike Thomas Bugno XI" }
   end
 
-  it "should load content from xml" do
-    @contact.content.should == "Notes about Mike"
+  context "should load content from xml" do
+    its(:content) { should == "Notes about Mike" }
   end
 
-  it "should load updated from xml" do
-    @contact.updated.should == Time.parse("2012-03-15T20:49:22.418Z")
+  context "should load updated from xml" do
+    its(:updated) { should == Time.parse("2012-03-15T20:49:22.418Z") }
   end
 
-  it "should load organisation from xml" do
-    organizations = @contact.organizations
-    organizations.size.should == 1
-    org = organizations[0]
-    org.rel.should == "http://schemas.google.com/g/2005#other"
-    org.name.should == "FutureSimple"
-    org.title.should == "Coder"
+  context "should load organisations from xml" do
+    let (:organizations) { GoogleR::Contact.from_xml(@doc_root).organizations }
+    subject { organizations }
+    its(:size) { should == 1 }
+
+    context "single organization" do
+      let (:organization) { GoogleR::Contact.from_xml(@doc_root).organizations.first }
+      subject { organization }
+      its(:rel)   { should == "http://schemas.google.com/g/2005#other" }
+      its(:name)  { should == "FutureSimple" }
+      its(:title) { should == "Coder" }
+    end
   end
 
-  it "should load user nickname from xml" do
-    @contact.nickname = "Majki"
+  context "should load user nickname from xml" do
+    its(:nickname) { should = "Majki"}
   end
 
-  it "should load addresses from xml" do
-    addresses = @contact.addresses
-    addresses.size.should == 2
+  context "should load addresses from xml" do
+    let (:addresses) { GoogleR::Contact.from_xml(@doc_root).addresses }
+    subject { addresses }
+    its(:size) { should == 2 }
 
-    a1 = addresses.find { |e| e.rel == "http://schemas.google.com/g/2005#home" }
-    a1.street.should == "ulica"
-    a1.neighborhood.should == "okolica"
-    a1.pobox.should == "skrytka"
-    a1.postcode.should == "kod"
-    a1.city.should == "miasto"
-    a1.region.should == "wojewodztwo"
-    a1.country.should == "kraj"
+    context "home" do
+      subject { addresses.find { |e| e.rel == "http://schemas.google.com/g/2005#home" } }
+      its(:street)       { should == "ulica" }
+      its(:neighborhood) { should == "okolica" }
+      its(:pobox)        { should == "skrytka" }
+      its(:postcode)     { should == "kod" }
+      its(:city)         { should == "miasto" }
+      its(:region)       { should == "wojewodztwo" }
+      its(:country)      { should == "kraj" }
+    end
 
-    a2 = addresses.find { |e| e.rel == "http://schemas.google.com/g/2005#work" }
-    a2.street.should == "ulica2"
-    a2.neighborhood.should == "okolica2"
-    a2.pobox.should == "skrytka2"
-    a2.postcode.should == "kod2"
-    a2.city.should == "miasto2"
-    a2.region.should == "wojewodztwo2"
-    a2.country.should == "kraj2"
+    context "work" do
+      subject { addresses.find { |e| e.rel == "http://schemas.google.com/g/2005#work" } }
+      its(:street)       { should == "ulica2" }
+      its(:neighborhood) { should == "okolica2" }
+      its(:pobox)        { should == "skrytka2" }
+      its(:postcode)     { should == "kod2" }
+      its(:city)         { should == "miasto2" }
+      its(:region)       { should == "wojewodztwo2" }
+      its(:country)      { should == "kraj2" }
+    end
+
   end
 
-  it "should load group membership from xml" do
-    groups = @contact.groups
-    groups.size.should == 2
+  context "should load group membership from xml" do
+    let (:groups) { GoogleR::Contact.from_xml(@doc_root).groups }
+    subject { groups }
+    its(:size) { should == 2 }
 
-    g1 = groups.find { |e| e.google_id == "http://www.google.com/m8/feeds/groups/michal%40futuresimple.com/base/6" }
-    g1.should_not be_nil
+    context "first" do
+      google_id = "http://www.google.com/m8/feeds/groups/michal%40futuresimple.com/base/6"
+      subject { groups.find { |e| e.google_id == google_id } }
+      it { should_not be_nil }
+    end
 
-    g2 = groups.find { |e| e.google_id == "http://www.google.com/m8/feeds/groups/michal%40futuresimple.com/base/5747930b8e7844f6" }
-    g2.should_not be_nil
+    context "last" do
+      google_id = "http://www.google.com/m8/feeds/groups/michal%40futuresimple.com/base/5747930b8e7844f6"
+      subject { groups.find { |e| e.google_id == google_id } }
+      it { should_not be_nil }
+    end
   end
 
-  it "should treat contact without google_id as new?" do
-    GoogleR::Contact.new.should be_new
+  context "should treat contact without google_id as new?" do
+    subject { GoogleR::Contact.new }
+    it { should be_new }
   end
 
-  it "should treat contact with google_id as !new?" do
-    @contact.should_not be_new
+  context "should treat contact with google_id as !new?" do
+    it { should_not be_new }
   end
 
-  it "should load user fields from xml" do
-    @contact.user_fields.should == {"own key" => "Own value"}
+  context "should load user fields from xml" do
+    its(:user_fields) { should == {"own key" => "Own value"} }
   end
 
   it "should load websites from xml" do
-    @contact.websites.map { |e| e.href }.sort.should == ["glowna.com", "sluzbowy.com"].sort
-    @contact.websites.map { |e| e.rel }.sort.should == ["work", "home-page"].sort
+    contact.websites.map { |e| e.href }.sort.should == ["glowna.com", "sluzbowy.com"].sort
+    contact.websites.map { |e| e.rel }.sort.should == ["work", "home-page"].sort
   end
 
   it "should generate valid xml" do
-    xml = @contact.to_google
+    xml = contact.to_google
     c = Nokogiri::XML.parse(xml)
     c = c.root
 
