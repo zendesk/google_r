@@ -44,6 +44,8 @@ class GoogleR::Event
       event.description = json["description"]
       event.summary = json["summary"]
       event.visibility = json["visibility"]
+      event.start_time = Time.parse(json["start"]["dateTime"])
+      event.end_time = Time.parse(json["end"]["dateTime"])
       event.updated = Time.parse(json["updated"])
       event.created = Time.parse(json["created"])
       event
