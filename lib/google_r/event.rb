@@ -65,8 +65,6 @@ class GoogleR::Event
     hash["start"] = {"dateTime" => start_time} if start_time
     hash["end"] = {"dateTime" => end_time} if end_time
     hash["visibility"] = visibility if visibility
-    hash["updated"] = updated.strftime("%Y-%m-%dT%H:%M:%SZ") if updated
-    hash["created"] = created.strftime("%Y-%m-%dT%H:%M:%SZ") if created
     Yajl::Encoder.encode(hash, yajl_opts)
   end
 
