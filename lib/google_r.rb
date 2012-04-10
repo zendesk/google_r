@@ -57,6 +57,11 @@ class GoogleR
     end
   end
 
+  def delete(object, params = {})
+    response = make_request(:delete, object.class.url, object.path, params, nil, object.class.api_headers)
+    response.status
+  end
+
   def contacts(params = {})
     fetch_legacy_xml(GoogleR::Contact, GoogleR::Contact.url, GoogleR::Contact.path, params)
   end

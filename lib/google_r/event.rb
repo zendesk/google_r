@@ -2,7 +2,7 @@ require 'ostruct'
 
 class GoogleR::Event
   attr_accessor :google_id, :etag, :start_time, :end_time, :calendar, :description, :summary,
-                :visibility, :updated, :created
+                :visibility, :updated, :created, :status
 
   def initialize(calendar, opts = {})
     self.calendar = calendar
@@ -44,6 +44,7 @@ class GoogleR::Event
       event.description = json["description"]
       event.summary = json["summary"]
       event.visibility = json["visibility"]
+      event.status = json["status"]
       event.start_time = Time.parse(json["start"]["dateTime"])
       event.end_time = Time.parse(json["end"]["dateTime"])
       event.updated = Time.parse(json["updated"])
@@ -65,6 +66,7 @@ class GoogleR::Event
     hash["start"] = {"dateTime" => start_time} if start_time
     hash["end"] = {"dateTime" => end_time} if end_time
     hash["visibility"] = visibility if visibility
+    hash["status"] = status if status
     Yajl::Encoder.encode(hash, yajl_opts)
   end
 
