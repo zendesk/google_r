@@ -2,7 +2,7 @@ require 'ostruct'
 
 class GoogleR::Event
   attr_accessor :google_id, :etag, :start_time, :end_time, :calendar, :description, :summary,
-                :visibility, :updated, :created, :status
+    :visibility, :updated, :created, :status, :start_time_zone, :end_time_zone
 
   def initialize(calendar, opts = {})
     self.calendar = calendar
@@ -46,7 +46,9 @@ class GoogleR::Event
       event.visibility = json["visibility"]
       event.status = json["status"]
       event.start_time = Time.parse(json["start"]["dateTime"])
+      event.start_time_zone = Time.parse(json["start"]["timeZone"])
       event.end_time = Time.parse(json["end"]["dateTime"])
+      event.end_time_zone = Time.parse(json["end"]["timeZone"])
       event.updated = Time.parse(json["updated"])
       event.created = Time.parse(json["created"])
       event
@@ -63,8 +65,14 @@ class GoogleR::Event
     hash["id"] = google_id if google_id
     hash["description"] = description if description
     hash["summary"] = summary if summary
-    hash["start"] = {"dateTime" => start_time} if start_time
-    hash["end"] = {"dateTime" => end_time} if end_time
+    start = {}
+    start["dateTime"] = start_time if start_time
+    start["timeZone"] = start_time_zone if start_time_zone
+    finish = {}
+    finish["dateTime"] = end_time if end_time
+    finish["timeZone"] = end_time_zone if end_time_zone
+    hash["start"] = start
+    hash["end"] = finish
     hash["visibility"] = visibility if visibility
     hash["status"] = status if status
     Yajl::Encoder.encode(hash, yajl_opts)
