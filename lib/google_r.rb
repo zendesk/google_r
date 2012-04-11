@@ -179,7 +179,7 @@ class GoogleR
   def token
     begin
       token = GoogleR::Token.new(oauth2_token)
-      response = make_request(:post, GoogleR::Token.url, token.path, {:access_token => oauth2_token}, nil, GoogleR::Token.headers)
+      response = make_request(:post, GoogleR::Token.url, token.path, {:access_token => oauth2_token}, nil, GoogleR::Token.api_headers)
       if response.status == 200
         GoogleR::Token.from_json(Yajl::Parser.parse(response.body), oauth2_token)
       else
