@@ -35,4 +35,12 @@ describe GoogleR::Contact do
 
     g.search("id").size.should == 1
   end
+
+  context "google api expectations" do
+    it "should send application/xml+atom content type for groups" do
+      headers = GoogleR::Group.api_headers
+      headers.should have_key("Content-Type")
+      headers["Content-Type"].should == "application/atom+xml"
+    end
+  end
 end

@@ -223,4 +223,12 @@ describe GoogleR::Contact do
     websites.map { |e| e[:href] }.sort.should == ["glowna.com", "sluzbowy.com"].sort
     websites.map { |e| e[:rel] }.sort.should == ["work", "home-page"].sort
   end
+
+  context "google api expectations" do
+    it "should send application/xml+atom content type for contacts" do
+      headers = GoogleR::Contact.api_headers
+      headers.should have_key("Content-Type")
+      headers["Content-Type"].should == "application/atom+xml"
+    end
+  end
 end

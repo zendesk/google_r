@@ -32,7 +32,7 @@ class GoogleR::Contact
   def self.api_headers
     {
       'GData-Version' => '3.0',
-      'Content-Type' => 'application/xml',
+      'Content-Type' => 'application/atom+xml',
     }
   end
 
