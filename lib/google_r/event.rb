@@ -66,10 +66,10 @@ class GoogleR::Event
     hash["description"] = description if description
     hash["summary"] = summary if summary
     start = {}
-    start["dateTime"] = start_time if start_time
+    start["dateTime"] = format_time(start_time) if start_time
     start["timeZone"] = start_time_zone if start_time_zone
     finish = {}
-    finish["dateTime"] = end_time if end_time
+    finish["dateTime"] = format_time(end_time) if end_time
     finish["timeZone"] = end_time_zone if end_time_zone
     hash["start"] = start
     hash["end"] = finish
@@ -80,5 +80,9 @@ class GoogleR::Event
 
   def new?
     self.google_id.nil?
+  end
+
+  def format_time(time)
+    time.strftime("%Y-%m-%dT%H:%M:%S%:z")
   end
 end
