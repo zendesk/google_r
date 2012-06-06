@@ -73,5 +73,18 @@ describe GoogleR do
         api.test_access.should eq(false)
       end
     end
+
+    context "when test response is somethig else" do
+      before do
+        response = mock(:status => 500, :body => "Server error")
+        api.should_receive(:make_request).and_return(response)
+      end
+
+      it "raises GoogleR::Error" do
+        expect {
+          api.test_access
+        }.to raise_error(GoogleR::Error)
+      end
+    end
   end
 end

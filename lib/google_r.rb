@@ -189,6 +189,13 @@ class GoogleR
   end
 
   def test_access
-    self.make_request(:get, "https://www.google.com", "/m8/feeds/contacts/default/full", {"max-results" => 0}, nil, {}).status == 200
+    response = self.make_request(:get, "https://www.google.com", "/m8/feeds/contacts/default/full", {"max-results" => 0}, nil, {})
+    if response.status == 401
+      false
+    elsif response.status == 200
+      return true
+    else
+      raise GoogleR::Error.new(response.status, response.body)
+    end
   end
 end
