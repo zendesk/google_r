@@ -50,4 +50,28 @@ describe GoogleR do
     ex.message.should include("400")
     ex.message.should include("Failed :(")
   end
+
+  describe "test_access" do
+    context "when test response is 200" do
+      before do
+        response = mock(:status => 200)
+        api.should_receive(:make_request).and_return(response)
+      end
+
+      it "returns true" do
+        api.test_access.should eq(true)
+      end
+    end
+
+    context "when test response is 401" do
+      before do
+        response = mock(:status => 401)
+        api.should_receive(:make_request).and_return(response)
+      end
+
+      it "returns true" do
+        api.test_access.should eq(false)
+      end
+    end
+  end
 end
