@@ -45,10 +45,19 @@ class GoogleR::Event
       event.summary = json["summary"]
       event.visibility = json["visibility"]
       event.status = json["status"]
-      event.start_time = Time.parse(json["start"]["dateTime"])
-      event.start_time_zone = json["start"]["timeZone"]
-      event.end_time = Time.parse(json["end"]["dateTime"])
-      event.end_time_zone = json["end"]["timeZone"]
+
+      start_time = json["start"]["dateTime"] || json["start"]["date"]
+      if start_time
+        event.start_time = Time.parse(start_time)
+        event.start_time_zone = json["start"]["timeZone"]
+      end
+
+      end_time = json["end"]["dateTime"] || json["end"]["date"]
+      if end_time
+        event.end_time = Time.parse(end_time)
+        event.end_time_zone = json["end"]["timeZone"]
+      end
+
       event.updated = Time.parse(json["updated"])
       event.created = Time.parse(json["created"])
       event
