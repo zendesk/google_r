@@ -1,0 +1,22 @@
+{
+ "kind": "calendar#calendarList",
+ "etag": "\"p33g9te72ti2d00g\"",
+ "nextSyncToken": "foo=",
+ "items": [
+  {
+
+   "kind": "calendar#calendarListEntry",
+   "etag": "\"14779102593600\"",
+   "id": "foo",
+   "summary": "Base Tasks",
+   "description": "Tasks from Base CRM",
+   "timeZone": "+02:00 Amsterdam",
+   "colorId": "18",
+   "backgroundColor": "#b99aff",
+   "foregroundColor": "#000000",
+   "selected": true,
+   "accessRole": "owner",
+   "defaultReminders": [
+   ]
+}
+]}
