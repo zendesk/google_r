@@ -159,7 +159,7 @@ class GoogleR
         req.headers[header] = value
       end
       req.body = body
-      puts "#{http_method} #{url}/#{path}"
+      self.logger.debug "#{http_method} #{url}/#{path}"
     end
   end
 
