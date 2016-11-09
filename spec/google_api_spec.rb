@@ -87,4 +87,33 @@ describe GoogleR do
       end
     end
   end
+
+  context "requests listeners" do
+    let(:event_handler) { double }
+
+    before do
+      google_calendars = File.read('spec/fixtures/calendar_list.json');
+      allow_any_instance_of(Faraday::Connection).to receive(:send).and_return(
+        mock(:body => google_calendars,
+             :status => 200,
+             :headers => {"Content-Type" => "json"})
+      )
+    end
+
+    it "adds listeners" do
+      expect((api.subscribe_request_listener(:get) { |event| event }).size).to eq(1)
+    end
+
+    it  "calls block on fetch" do
+      expect(event_handler).to receive(:handle)
+      api.subscribe_request_listener(:get) { |event| event_handler.handle(event) }
+
+      api.calendars
+    end
+
+    it "doesn't try to call when listener is not subscribed" do
+      expect{ api.calendars }.not_to raise_error(NoMethodError)
+    end
+
+  end
 end

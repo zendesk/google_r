@@ -20,6 +20,12 @@ class GoogleR
     @oauth2_token = oauth2_token
     self.logger = Logger.new("/dev/null")
     self.logger.formatter = Logger::Formatter.new
+    @request_listeners = {}
+  end
+
+  def subscribe_request_listener(method, &handler)
+    @request_listeners[method.to_sym] = handler
+    @request_listeners
   end
 
   def fetch(object, params = {})
@@ -151,6 +157,8 @@ class GoogleR
   end
 
   def make_request(http_method, url, path, params, body, headers)
+    notify_subscriber(http_method.to_sym)
+
     params = Faraday::Utils.build_query(params)
     path = path + "?" + params unless params == ""
     response = connection(url).send(http_method, path) do |req|
@@ -197,5 +205,11 @@ class GoogleR
     else
       raise GoogleR::Error.new(response.status, response.body)
     end
+  end
+
+  private
+
+  def notify_subscriber(method)
+    @request_listeners[method].call if @request_listeners[method]
   end
 end
