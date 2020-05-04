@@ -10,6 +10,6 @@ gem 'google_r', '~> 0.1', github: 'fstech/google_r'
 
 ## Copyright and license
 
-Copyright 2020 Zendesk
+Copyright 2012 Zendesk
 
 Licensed under the [Apache License, Version 2.0](LICENSE)
