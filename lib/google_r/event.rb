@@ -76,9 +76,11 @@ class GoogleR::Event
     hash["summary"] = summary if summary
     start = {}
     start["dateTime"] = format_time(start_time) if start_time
+    start["date"] = nil if start_time
     start["timeZone"] = start_time_zone if start_time_zone
     finish = {}
     finish["dateTime"] = format_time(end_time) if end_time
+    finish["date"] = nil if end_time
     finish["timeZone"] = end_time_zone if end_time_zone
     hash["start"] = start
     hash["end"] = finish
