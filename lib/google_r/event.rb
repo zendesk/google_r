@@ -58,8 +58,8 @@ class GoogleR::Event
         event.end_time_zone = json["end"]["timeZone"]
       end
 
-      event.updated = Time.parse(json["updated"])
-      event.created = Time.parse(json["created"])
+      event.updated = Time.parse(json["updated"]) if json['updated']
+      event.created = Time.parse(json["created"]) if json['created']
       event
     else
       raise "Not implemented:\n#{json.inspect}"
