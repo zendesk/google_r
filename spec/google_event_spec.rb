@@ -10,7 +10,7 @@ describe GoogleR::Event do
     time = Time.new(2012, 6, 4, 9, 34, 48, "-04:00")
     event.start_time = time
     format = event.to_google
-    format.should include("2012-06-04T09:34:48-04:00")
+    expect(format).to include("2012-06-04T09:34:48-04:00")
   end
 
   it "parses events which take whole day" do
@@ -26,8 +26,8 @@ describe GoogleR::Event do
       "created" => Time.now.to_s,
     }
 
-    event = GoogleR::Event.from_json(json, mock(:calendar => nil))
-    event.start_time.should == Time.parse("2012-03-04")
-    event.end_time.should == Time.parse("2012-03-05")
+    event = GoogleR::Event.from_json(json, double(:calendar => nil))
+    expect(event.start_time).to eq(Time.parse("2012-03-04"))
+    expect(event.end_time).to eq(Time.parse("2012-03-05"))
   end
 end

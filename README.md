@@ -1,6 +1,9 @@
+# InputSanitizer
+![CI](https://github.com/zendesk/input_sanitizer/workflows/CI/badge.svg)
+
 # google_r
 
-Google API wrapper
+Google API wrapper. It facilitates processing of Google XML's
 
 ## Installation
 
