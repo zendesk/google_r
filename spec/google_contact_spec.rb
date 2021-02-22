@@ -12,41 +12,100 @@ describe GoogleR::Contact do
   subject { contact }
 
   context "should load id and etag from xml" do
-    its(:google_id) { should == "http://www.google.com/m8/feeds/contacts/michal%40futuresimple.com/base/2f30e7d8bf01953" }
-    its(:etag) { should == "\"Q3o6cDVSLit7I2A9WhVSGEkOQgI.\"" }
+    describe '#google_id' do
+      subject { super().google_id }
+      it { is_expected.to eq("http://www.google.com/m8/feeds/contacts/michal%40futuresimple.com/base/2f30e7d8bf01953") }
+    end
+
+    describe '#etag' do
+      subject { super().etag }
+      it { is_expected.to eq("\"Q3o6cDVSLit7I2A9WhVSGEkOQgI.\"") }
+    end
   end
 
   context "should load emails from xml" do
     let (:emails) { GoogleR::Contact.from_xml(@doc_root).emails }
     subject { emails }
-    its(:size) { should == 4 }
+
+    describe '#size' do
+      subject { super().size }
+      it { is_expected.to eq(4) }
+    end
 
     context "home_email" do
       subject { emails.find { |e| e.rel == "http://schemas.google.com/g/2005#home" } } 
-      its(:address) { should == "home@example.com" }
-      its(:label)   { should be_nil }
-      its(:primary) { should be_true }
+
+      describe '#address' do
+        subject { super().address }
+        it { is_expected.to eq("home@example.com") }
+      end
+
+      describe '#label' do
+        subject { super().label }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#primary' do
+        subject { super().primary }
+        it { is_expected.to be_truthy }
+      end
     end
 
     context "work_email" do
       subject { emails.find { |e| e.rel == "http://schemas.google.com/g/2005#work" } } 
-      its(:address) { should == "work@example.com" }
-      its(:label)   { should be_nil }
-      its(:primary) { should be_false }
+
+      describe '#address' do
+        subject { super().address }
+        it { is_expected.to eq("work@example.com") }
+      end
+
+      describe '#label' do
+        subject { super().label }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#primary' do
+        subject { super().primary }
+        it { is_expected.to be_falsey }
+      end
     end
 
     context "other_email" do
       subject { emails.find { |e| e.rel == "http://schemas.google.com/g/2005#other" } } 
-      its(:address) { should == "other@example.com" }
-      its(:label)   { should be_nil }
-      its(:primary) { should be_false }
+
+      describe '#address' do
+        subject { super().address }
+        it { is_expected.to eq("other@example.com") }
+      end
+
+      describe '#label' do
+        subject { super().label }
+        it { is_expected.to be_nil }
+      end
+
+      describe '#primary' do
+        subject { super().primary }
+        it { is_expected.to be_falsey }
+      end
     end
 
     context "custom_email" do
       subject { emails.find { |e| e.rel.nil? } }
-      its(:address) { should == "nonstandard@example.com" }
-      its(:label)   { should == "Non standard" }
-      its(:primary) { should be_false }
+
+      describe '#address' do
+        subject { super().address }
+        it { is_expected.to eq("nonstandard@example.com") }
+      end
+
+      describe '#label' do
+        subject { super().label }
+        it { is_expected.to eq("Non standard") }
+      end
+
+      describe '#primary' do
+        subject { super().primary }
+        it { is_expected.to be_falsey }
+      end
     end
 
   end
@@ -54,89 +113,217 @@ describe GoogleR::Contact do
   context "should load phones from xml" do
     let (:phones) { GoogleR::Contact.from_xml(@doc_root).phones }
     subject { phones }
-    its(:size) { should == 4 }
+
+    describe '#size' do
+      subject { super().size }
+      it { is_expected.to eq(4) }
+    end
 
     context "home_phone" do
       subject { phones.find { |e| e.rel == "http://schemas.google.com/g/2005#home" } }
-      its(:text) { should == "444-home" }
+
+      describe '#text' do
+        subject { super().text }
+        it { is_expected.to eq("444-home") }
+      end
     end
 
     context "work_phone" do
       subject { phones.find { |e| e.rel == "http://schemas.google.com/g/2005#work" } }
-      its(:text) { should == "023-office" }
+
+      describe '#text' do
+        subject { super().text }
+        it { is_expected.to eq("023-office") }
+      end
     end
 
     context "mobile_phone" do
       subject { phones.find { |e| e.rel == "http://schemas.google.com/g/2005#mobile" } }
-      its(:text) { should == "43-mobile" }
+
+      describe '#text' do
+        subject { super().text }
+        it { is_expected.to eq("43-mobile") }
+      end
     end
 
     context "main_phone" do
       subject { phones.find { |e| e.rel == "http://schemas.google.com/g/2005#main" } }
-      its(:text) { should == "888-main" }
+
+      describe '#text' do
+        subject { super().text }
+        it { is_expected.to eq("888-main") }
+      end
     end
   end
 
   context "should load name from xml" do
-    its(:name_prefix)     { should == "Sir" }
-    its(:given_name)      { should == "Mike" }
-    its(:additional_name) { should == "Thomas" }
-    its(:family_name)     { should == "Bugno" }
-    its(:name_suffix)     { should == "XI" }
-    its(:full_name)       { should == "Sir Mike Thomas Bugno XI" }
+    describe '#name_prefix' do
+      subject { super().name_prefix }
+      it { is_expected.to eq("Sir") }
+    end
+
+    describe '#given_name' do
+      subject { super().given_name }
+      it { is_expected.to eq("Mike") }
+    end
+
+    describe '#additional_name' do
+      subject { super().additional_name }
+      it { is_expected.to eq("Thomas") }
+    end
+
+    describe '#family_name' do
+      subject { super().family_name }
+      it { is_expected.to eq("Bugno") }
+    end
+
+    describe '#name_suffix' do
+      subject { super().name_suffix }
+      it { is_expected.to eq("XI") }
+    end
+
+    describe '#full_name' do
+      subject { super().full_name }
+      it { is_expected.to eq("Sir Mike Thomas Bugno XI") }
+    end
   end
 
   context "should load content from xml" do
-    its(:content) { should == "Notes about Mike" }
+    describe '#content' do
+      subject { super().content }
+      it { is_expected.to eq("Notes about Mike") }
+    end
   end
 
   context "should load updated from xml" do
-    its(:updated) { should == Time.parse("2012-03-15T20:49:22.418Z") }
+    describe '#updated' do
+      subject { super().updated }
+      it { is_expected.to eq(Time.parse("2012-03-15T20:49:22.418Z")) }
+    end
   end
 
   context "should load organisations from xml" do
     let (:organizations) { GoogleR::Contact.from_xml(@doc_root).organizations }
     subject { organizations }
-    its(:size) { should == 1 }
+
+    describe '#size' do
+      subject { super().size }
+      it { is_expected.to eq(1) }
+    end
 
     context "single organization" do
       let (:organization) { GoogleR::Contact.from_xml(@doc_root).organizations.first }
       subject { organization }
-      its(:rel)   { should == "http://schemas.google.com/g/2005#other" }
-      its(:name)  { should == "FutureSimple" }
-      its(:title) { should == "Coder" }
+
+      describe '#rel' do
+        subject { super().rel }
+        it { is_expected.to eq("http://schemas.google.com/g/2005#other") }
+      end
+
+      describe '#name' do
+        subject { super().name }
+        it { is_expected.to eq("FutureSimple") }
+      end
+
+      describe '#title' do
+        subject { super().title }
+        it { is_expected.to eq("Coder") }
+      end
     end
   end
 
   context "should load user nickname from xml" do
-    its(:nickname) { should = "Majki"}
+    describe '#nickname' do
+      subject { super().nickname }
+      it { should = "Majki"}
+    end
   end
 
   context "should load addresses from xml" do
     let (:addresses) { GoogleR::Contact.from_xml(@doc_root).addresses }
     subject { addresses }
-    its(:size) { should == 2 }
+
+    describe '#size' do
+      subject { super().size }
+      it { is_expected.to eq(2) }
+    end
 
     context "home" do
       subject { addresses.find { |e| e.rel == "http://schemas.google.com/g/2005#home" } }
-      its(:street)       { should == "ulica" }
-      its(:neighborhood) { should == "okolica" }
-      its(:pobox)        { should == "skrytka" }
-      its(:postcode)     { should == "kod" }
-      its(:city)         { should == "miasto" }
-      its(:region)       { should == "wojewodztwo" }
-      its(:country)      { should == "kraj" }
+
+      describe '#street' do
+        subject { super().street }
+        it { is_expected.to eq("ulica") }
+      end
+
+      describe '#neighborhood' do
+        subject { super().neighborhood }
+        it { is_expected.to eq("okolica") }
+      end
+
+      describe '#pobox' do
+        subject { super().pobox }
+        it { is_expected.to eq("skrytka") }
+      end
+
+      describe '#postcode' do
+        subject { super().postcode }
+        it { is_expected.to eq("kod") }
+      end
+
+      describe '#city' do
+        subject { super().city }
+        it { is_expected.to eq("miasto") }
+      end
+
+      describe '#region' do
+        subject { super().region }
+        it { is_expected.to eq("wojewodztwo") }
+      end
+
+      describe '#country' do
+        subject { super().country }
+        it { is_expected.to eq("kraj") }
+      end
     end
 
     context "work" do
       subject { addresses.find { |e| e.rel == "http://schemas.google.com/g/2005#work" } }
-      its(:street)       { should == "ulica2" }
-      its(:neighborhood) { should == "okolica2" }
-      its(:pobox)        { should == "skrytka2" }
-      its(:postcode)     { should == "kod2" }
-      its(:city)         { should == "miasto2" }
-      its(:region)       { should == "wojewodztwo2" }
-      its(:country)      { should == "kraj2" }
+
+      describe '#street' do
+        subject { super().street }
+        it { is_expected.to eq("ulica2") }
+      end
+
+      describe '#neighborhood' do
+        subject { super().neighborhood }
+        it { is_expected.to eq("okolica2") }
+      end
+
+      describe '#pobox' do
+        subject { super().pobox }
+        it { is_expected.to eq("skrytka2") }
+      end
+
+      describe '#postcode' do
+        subject { super().postcode }
+        it { is_expected.to eq("kod2") }
+      end
+
+      describe '#city' do
+        subject { super().city }
+        it { is_expected.to eq("miasto2") }
+      end
+
+      describe '#region' do
+        subject { super().region }
+        it { is_expected.to eq("wojewodztwo2") }
+      end
+
+      describe '#country' do
+        subject { super().country }
+        it { is_expected.to eq("kraj2") }
+      end
     end
 
   end
@@ -144,37 +331,44 @@ describe GoogleR::Contact do
   context "should load group membership from xml" do
     let (:groups) { GoogleR::Contact.from_xml(@doc_root).groups }
     subject { groups }
-    its(:size) { should == 2 }
+
+    describe '#size' do
+      subject { super().size }
+      it { is_expected.to eq(2) }
+    end
 
     context "first" do
       google_id = "http://www.google.com/m8/feeds/groups/michal%40futuresimple.com/base/6"
       subject { groups.find { |e| e.google_id == google_id } }
-      it { should_not be_nil }
+      it { is_expected.not_to be_nil }
     end
 
     context "last" do
       google_id = "http://www.google.com/m8/feeds/groups/michal%40futuresimple.com/base/5747930b8e7844f6"
       subject { groups.find { |e| e.google_id == google_id } }
-      it { should_not be_nil }
+      it { is_expected.not_to be_nil }
     end
   end
 
   context "should treat contact without google_id as new?" do
     subject { GoogleR::Contact.new }
-    it { should be_new }
+    it { is_expected.to be_new }
   end
 
   context "should treat contact with google_id as !new?" do
-    it { should_not be_new }
+    it { is_expected.not_to be_new }
   end
 
   context "should load user fields from xml" do
-    its(:user_fields) { should == {"own key" => "Own value"} }
+    describe '#user_fields' do
+      subject { super().user_fields }
+      it { is_expected.to eq({"own key" => "Own value"}) }
+    end
   end
 
   it "should load websites from xml" do
-    contact.websites.map { |e| e.href }.sort.should == ["glowna.com", "sluzbowy.com"].sort
-    contact.websites.map { |e| e.rel }.sort.should == ["work", "home-page"].sort
+    expect(contact.websites.map { |e| e.href }.sort).to eq(["glowna.com", "sluzbowy.com"].sort)
+    expect(contact.websites.map { |e| e.rel }.sort).to eq(["work", "home-page"].sort)
   end
 
   it "should generate valid xml" do
@@ -182,53 +376,53 @@ describe GoogleR::Contact do
     c = Nokogiri::XML.parse(xml)
     c = c.root
 
-    c.name.should == "entry"
-    c.namespace.prefix.should == "atom"
+    expect(c.name).to eq("entry")
+    expect(c.namespace.prefix).to eq("atom")
 
-    c.search("id").size.should == 1
+    expect(c.search("id").size).to eq(1)
 
-    c.search("./gd:name/gd:givenName").size.should == 1
-    c.search("./gd:name/gd:givenName").inner_text.should == "Mike"
-    c.search("./gd:name/gd:additionalName").size.should == 1
-    c.search("./gd:name/gd:additionalName").inner_text.should == "Thomas"
-    c.search("./gd:name/gd:familyName").size.should == 1
-    c.search("./gd:name/gd:familyName").inner_text.should == "Bugno"
-    c.search("./gd:name/gd:namePrefix").size.should == 1
-    c.search("./gd:name/gd:namePrefix").inner_text.should == "Sir"
-    c.search("./gd:name/gd:nameSuffix").size.should == 1
-    c.search("./gd:name/gd:nameSuffix").inner_text.should == "XI"
+    expect(c.search("./gd:name/gd:givenName").size).to eq(1)
+    expect(c.search("./gd:name/gd:givenName").inner_text).to eq("Mike")
+    expect(c.search("./gd:name/gd:additionalName").size).to eq(1)
+    expect(c.search("./gd:name/gd:additionalName").inner_text).to eq("Thomas")
+    expect(c.search("./gd:name/gd:familyName").size).to eq(1)
+    expect(c.search("./gd:name/gd:familyName").inner_text).to eq("Bugno")
+    expect(c.search("./gd:name/gd:namePrefix").size).to eq(1)
+    expect(c.search("./gd:name/gd:namePrefix").inner_text).to eq("Sir")
+    expect(c.search("./gd:name/gd:nameSuffix").size).to eq(1)
+    expect(c.search("./gd:name/gd:nameSuffix").inner_text).to eq("XI")
 
-    c.search("./atom:content").inner_text.should == "Notes about Mike"
+    expect(c.search("./atom:content").inner_text).to eq("Notes about Mike")
 
-    c.search("./gContact:nickname").inner_text.should == "Majki"
+    expect(c.search("./gContact:nickname").inner_text).to eq("Majki")
 
-    c.search("./gd:phoneNumber").map { |e| e.inner_text }.sort.should == ["43-mobile", "023-office", "444-home", "888-main"].sort
+    expect(c.search("./gd:phoneNumber").map { |e| e.inner_text }.sort).to eq(["43-mobile", "023-office", "444-home", "888-main"].sort)
 
-    c.search("./gd:email").map { |e| e[:address] }.should == ["home@example.com", "work@example.com", "other@example.com", "nonstandard@example.com"]
-    c.search("./gd:email").map { |e| e[:primary] }.should == ["true", "false", "false", "false"]
+    expect(c.search("./gd:email").map { |e| e[:address] }).to eq(["home@example.com", "work@example.com", "other@example.com", "nonstandard@example.com"])
+    expect(c.search("./gd:email").map { |e| e[:primary] }).to eq(["true", "false", "false", "false"])
 
-    c.search("./gd:organization/gd:orgName").size.should == 1
-    c.search("./gd:organization/gd:orgName").inner_text.should == "FutureSimple"
-    c.search("./gd:organization/gd:orgTitle").size.should == 1
-    c.search("./gd:organization/gd:orgTitle").inner_text.should == "Coder"
+    expect(c.search("./gd:organization/gd:orgName").size).to eq(1)
+    expect(c.search("./gd:organization/gd:orgName").inner_text).to eq("FutureSimple")
+    expect(c.search("./gd:organization/gd:orgTitle").size).to eq(1)
+    expect(c.search("./gd:organization/gd:orgTitle").inner_text).to eq("Coder")
 
-    c.search("./gContact:groupMembershipInfo").size.should == 2
-    c.search("./gContact:groupMembershipInfo").map { |e| e[:deleted] }.should == ["false", "false"]
+    expect(c.search("./gContact:groupMembershipInfo").size).to eq(2)
+    expect(c.search("./gContact:groupMembershipInfo").map { |e| e[:deleted] }).to eq(["false", "false"])
 
-    c.search("./gContact:userDefinedField").size.should == 1
-    c.search("./gContact:userDefinedField")[0][:key].should == "own key"
-    c.search("./gContact:userDefinedField")[0][:value].should == "Own value"
+    expect(c.search("./gContact:userDefinedField").size).to eq(1)
+    expect(c.search("./gContact:userDefinedField")[0][:key]).to eq("own key")
+    expect(c.search("./gContact:userDefinedField")[0][:value]).to eq("Own value")
 
     websites = c.search("./gContact:website")
-    websites.map { |e| e[:href] }.sort.should == ["glowna.com", "sluzbowy.com"].sort
-    websites.map { |e| e[:rel] }.sort.should == ["work", "home-page"].sort
+    expect(websites.map { |e| e[:href] }.sort).to eq(["glowna.com", "sluzbowy.com"].sort)
+    expect(websites.map { |e| e[:rel] }.sort).to eq(["work", "home-page"].sort)
   end
 
   context "google api expectations" do
     it "should send application/xml+atom content type for contacts" do
       headers = GoogleR::Contact.api_headers
-      headers.should have_key("Content-Type")
-      headers["Content-Type"].should == "application/atom+xml"
+      expect(headers).to have_key("Content-Type")
+      expect(headers["Content-Type"]).to eq("application/atom+xml")
     end
   end
 end
