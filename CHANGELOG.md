@@ -1,3 +1,7 @@
+# 0.2.0
+- add Ruby gems workflow
+- make specs RSpec 3 style
+
 # 0.1.8
 + [enhancement] Gracefuly handle cases where Event is lacking 'created' aor 'updated' field.
 

@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
   s.name        = "google_r"
   s.version     = GoogleR::VERSION
   s.authors     = ["Przemek Owczarek", "Michal Bugno"]
-  s.email       = ["przemek@futuresimple.com", "michal@futuresimple.com"]
-  s.homepage    = ""
+  s.email       = ["opensource@zendesk.com"]
+  s.homepage    = "https://github.com/zendesk/google_r"
   s.summary     = %q{Google API with Ruby}
   s.description = %q{Google API with Ruby}
 
