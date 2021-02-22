@@ -5,14 +5,13 @@ require "google_r/version"
 Gem::Specification.new do |s|
   s.name        = "google_r"
   s.version     = GoogleR::VERSION
-  s.authors     = ["Przemek Owczarek", "Michal Bugno"]
+  s.authors     = ["Zendesk", "Przemek Owczarek", "Michal Bugno"]
   s.email       = ["opensource@zendesk.com"]
   s.homepage    = "https://github.com/zendesk/google_r"
   s.summary     = %q{Google API with Ruby}
   s.description = %q{Google API with Ruby}
-
-  s.rubyforge_project = "google_r"
-
+  s.license     = "Apache-2.0"
+  
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
